@@ -24,13 +24,40 @@ def init_stock(close_price, date):
 def get_best_stock_by_increment(stocks, year):
     best_increment = 0
     best_ticker = None
-    for stock in stocks:
-        close_price_increment = (stock[1][year]['last_close_price']['value'] - stock[1][year]['first_close_price']['value']) / stock[1][year]['first_close_price']['value'] * 100
-        if close_price_increment >= best_increment:
-            best_increment = close_price_increment
-            best_ticker = stock[0]
+    try:
+        for stock in stocks:
+            close_price_increment = (stock[1][year]['last_close_price']['value'] - stock[1][year]['first_close_price']['value']) / stock[1][year]['first_close_price']['value'] * 100
+            if close_price_increment >= best_increment:
+                best_increment = close_price_increment
+                best_ticker = stock[0]
+    except:
+        return best_ticker, best_increment
 
     return best_ticker, best_increment
+
+
+def get_best_stock_by_volume(stocks, year):
+    best_volume = 0
+    best_stock_ticker = None
+    for stock in stocks:
+        ticker, stock_data = stock
+        if stock_data[year]['total_volume'] > best_volume:
+            best_volume = stock_data[year]['total_volume']
+            best_stock_ticker = ticker
+    return best_stock_ticker, best_volume
+
+
+def get_sector_year_quotation(stocks, year):
+    total_first_close_price = 0
+    total_last_close_price = 0
+    for stock in stocks:
+        ticker, stock_data = stock
+        total_first_close_price += stock_data[year]['first_close_price']['value']
+        total_last_close_price += stock_data[year]['last_close_price']['value']
+    if total_first_close_price == 0:
+        return 0
+    else:
+        return round((total_last_close_price - total_first_close_price) / total_first_close_price * 100, 2)
 
 
 sector_2_stocks = {}
@@ -84,21 +111,14 @@ for line in sys.stdin:
         except:
             continue
 
-for sector in sector_2_stocks:
+ordered_sectors = sorted(sector_2_stocks.keys())
+for sector in ordered_sectors:
     years_report = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]
     sector_stocks = [(ticker, stocks_data[ticker]) for ticker in sector_2_stocks[sector]]
     for year in years_report:
         year = str(year)
         filtered_sector_stocks = [stock for stock in sector_stocks if year in stock[1]]
-        ordered_sector_stocks = sorted(filtered_sector_stocks, key=lambda item: item[1][year]['total_volume'],
-                                       reverse=True)
         best_stock_by_increment = get_best_stock_by_increment(filtered_sector_stocks, year)
-
-        try:
-            best_stock = ordered_sector_stocks[0]
-            best_stock_ticker, best_stock_data = best_stock
-            print(f"{sector}\t{year}\t{best_stock_ticker}({best_stock_data[year]['total_volume']})\t{best_stock_by_increment[0]}({best_stock_by_increment[1]}%")
-        except:
-            print(
-                f"{sector}\t{year}\t{'N/D'}"
-            )
+        best_stock_by_volume = get_best_stock_by_volume(filtered_sector_stocks, year)
+        sector_year_quotation = get_sector_year_quotation(filtered_sector_stocks, year)
+        print(f"{sector},{year},{sector_year_quotation}%,{best_stock_by_increment[0] or 'N/D'}({round(best_stock_by_increment[1], 2)}%),{best_stock_by_volume[0] or 'N/D'}({best_stock_by_volume[1]})")
