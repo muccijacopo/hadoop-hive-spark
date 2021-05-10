@@ -1,3 +1,9 @@
-project.pdf
+# Intellij
 .idea
+
+project.pdf
 files
+
+# Hive
+metastore_db
+derby.log
