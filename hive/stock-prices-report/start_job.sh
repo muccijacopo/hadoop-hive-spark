@@ -1,6 +1,6 @@
 #!/bin/bash
 
-hadoop fs -cp /input/stockprices/first.csv /input/stockprices/first_copy.csv
+hadoop fs -cp /input/stockprices/stock_prices.csv /input/stockprices/stock_prices_copy.csv
 echo "Cleaning previous work..."
 hive --f hive/stock-prices-report/clean_before.hql
 echo "Creating first table from file..."
