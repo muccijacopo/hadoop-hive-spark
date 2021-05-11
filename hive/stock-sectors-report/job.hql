@@ -52,20 +52,21 @@ CREATE TABLE IF NOT EXISTS stock_prices_sectors AS
 --     ) t2
 --     WHERE t2.rn = 1
 
-CREATE TABLE IF NOT EXISTS first_stock_per_year AS
+CREATE TABLE IF NOT EXISTS first_stock_tx_by_year AS
     SELECT *
     FROM (
         SELECT t1.ticker, t1.date_, t1.close_price
         FROM (
             SELECT *, ROW_NUMBER() OVER (PARTITION BY ticker, year(date_) ORDER BY ticker, year(date_) ASC) rn 
             FROM stock_prices  
+            WHERE year(date_) > 2008 AND year(date_) < 2019
         ) as t1
         WHERE t1.rn = 1
         ORDER BY t1.ticker ASC
     ) t2;
 
-CREATE TABLE IF NOT EXISTS last_stock_per_year AS
-    SELECT *
+CREATE TABLE IF NOT EXISTS last_stock_tx_by_year AS
+    SELECT t2.ticker, year(t2.date_) as year_, t2.close_price
     FROM (
         SELECT t1.ticker, t1.date_, t1.close_price
         FROM (
@@ -74,22 +75,41 @@ CREATE TABLE IF NOT EXISTS last_stock_per_year AS
             WHERE year(date_) > 2008 AND year(date_) < 2019
         ) as t1
         WHERE t1.rn = 1
-        ORDER BY t1.ticker ASC
-    ) t2;
+    ) t2
+    ORDER BY t2.ticker, t2.date_ ASC;
 
 
-CREATE TABLE IF NOT EXISTS stock_first_last AS
-    SELECT t1.ticker, t1.date_ as first_date, t1.close_price as first_close_price, t2.date_ as last_date, t2.close_price as last_close_price
-    FROM first_stock_per_year t1 
-    JOIN last_stock_per_year t2
-    ON (t1.ticker = t2.ticker AND year(t1.date_) = year(t2.date_))
+-- CREATE TABLE IF NOT EXISTS stocks_increment_by_year AS
+--     SELECT t1.ticker, year(t1.date_) as year_, (t2.close_price - t1.close_price) / t1.close_price * 100 as var
+--     FROM first_stock_tx_by_year t1 
+--     JOIN last_stock_tx_by_year t2
+--     ON (t1.ticker = t2.ticker AND year(t1.date_) = year(t2.date_));
 
--- CREATE TABLE stock_min_dates AS
---     SELECT *
+-- CREATE TABLE IF NOT EXISTS sectors_best_stock_by_increment_year AS
+--     SELECT t4.sector, t4.year_, t4.ticker, t4.var
 --     FROM (
---         SELECT ticker, MIN(date_) as date_
---         FROM stock_prices  
---         GROUP BY ticker, year(date_)
---     ) t1 
---     ORDER BY t1.ticker, year(date_)
+--         SELECT t3.sector, t3.year_, t3.ticker, t3.var, ROW_NUMBER() OVER (PARTITION BY t3.sector, t3.year_ ORDER BY t3.sector, t3.year_, t3.var DESC) rn
+--         FROM (
+--             SELECT t1.sector, t2.year_, t2.ticker, t2.var
+--             FROM stock_sectors t1 JOIN stocks_increment_by_year t2 ON t1.ticker = t2.ticker 
+--         ) t3
+--     ) t4
+--     WHERE t4.rn = 1
+--     ORDER BY t4.sector, t4.year_ ASC
+
+
+CREATE TABLE IF NOT EXISTS sectors_stock_price_year AS
+    SELECT t4.sector, t4.year_, (t4.total_end - t4.total_start) / t4.total_start * 100 as var
+    FROM (
+        SELECT t3.sector, t3.date_2 as year_, SUM(t3.close_price_1) as total_start, SUM(t3.close_price_2) as total_end
+        FROM (
+            SELECT t.sector, t.ticker, t1.date_ as date_1, t1.close_price as close_price_1, t2.year_ as date_2, t2.close_price as close_price_2
+            FROM stock_sectors t
+            JOIN first_stock_tx_by_year t1 ON (t.ticker = t1.ticker)
+            JOIN last_stock_tx_by_year t2 ON (t.ticker = t2.ticker)
+            WHERE year(t1.date_) = t2.year_
+        ) t3
+        GROUP BY t3.sector, t3.date_2
+    ) t4
+    ORDER BY t4.sector, t4.year_ ASC;
 
