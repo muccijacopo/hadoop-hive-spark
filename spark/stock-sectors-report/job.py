@@ -27,7 +27,7 @@ def get_year_from_date(date: str):
 
 
 input_folder_path = "hdfs:///app/input"
-output_folder_path = "hdfs:///app/output"
+output_folder_path = "hdfs:///app/output/spark/stock-sectors-report"
 
 conf = SparkConf().setAppName('Spark App')
 sc = SparkContext(conf=conf)
