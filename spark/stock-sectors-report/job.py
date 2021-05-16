@@ -56,13 +56,6 @@ complete_data: RDD = stock_prices_data.join(stock_sectors_data)\
     })
 
 
-# Task C (completato)
-# top_stock_by_volume_year = complete_data\
-#     .map(lambda x: ((x['sector'], get_year_from_date(x['date']), x['ticker']), x['volume']))\
-#     .reduceByKey(lambda a, b: a + b)\
-#     .map(lambda x: ((x[0][0], x[0][1]), (x[0][2], x[1])))\
-#     .reduceByKey(lambda a, b: a if a[1] > b[1] else b)\
-#     .sortByKey()\
 
 stocks_first_tx_year = complete_data\
     .map(lambda data: ((data['ticker'], get_year_from_date(data['date'])), (data['date'], data['close_price'], data['sector'])))\
@@ -71,14 +64,6 @@ stocks_first_tx_year = complete_data\
 stocks_last_tx_year = complete_data\
     .map(lambda data: ((data['ticker'], get_year_from_date(data['date'])), (data['date'], data['close_price'], data['sector'])))\
     .reduceByKey(lambda a, b: b if a[0] < b[0] else a)
-
-# TASK B completato ma da ricontrollare
-# stock_first_last_tx_year: RDD = stocks_first_tx_year.join(stocks_last_tx_year)
-# stocks_increment_year = stock_first_last_tx_year\
-#     .mapValues(lambda x: ((x[1][1] - x[0][1]) / x[0][1] * 100, x[0][2]))\
-#     .map(lambda x: ((x[1][1], x[0][1]), (x[0][0], x[1][0])))\
-#     .reduceByKey(lambda a, b: a if a[1] > b[1] else b)\
-#     .sortByKey()\
 
 # Task A (completato)
 sectors_volumes_start_year = stocks_first_tx_year\
@@ -93,4 +78,21 @@ sectors_volumes_year: RDD = sectors_volumes_start_year\
     .join(sectors_volumes_end_year)\
     .mapValues(lambda x: ((x[1] - x[0]) / x[0] * 100))
 
+# Task B (da ricontrollare)
+stock_first_last_tx_year: RDD = stocks_first_tx_year.join(stocks_last_tx_year)
+stocks_increment_year = stock_first_last_tx_year\
+    .mapValues(lambda x: ((x[1][1] - x[0][1]) / x[0][1] * 100, x[0][2]))\
+    .map(lambda x: ((x[1][1], x[0][1]), (x[0][0], x[1][0])))\
+    .reduceByKey(lambda a, b: a if a[1] > b[1] else b)
+
+# Task C
+stocks_volumes_year = complete_data\
+    .map(lambda x: ((x['sector'], get_year_from_date(x['date']), x['ticker']), x['volume']))\
+    .reduceByKey(lambda a, b: a + b)\
+    .map(lambda x: ((x[0][0], x[0][1]), (x[0][2], x[1])))\
+    .reduceByKey(lambda a, b: a if a[1] > b[1] else b)\
+
+
+results: RDD = sectors_volumes_year.join(stocks_increment_year).join(stocks_volumes_year)
+results.sortByKey().saveAsTextFile(output_folder_path)
 
