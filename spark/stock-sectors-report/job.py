@@ -80,14 +80,17 @@ stocks_last_tx_year = complete_data\
 #     .reduceByKey(lambda a, b: a if a[1] > b[1] else b)\
 #     .sortByKey()\
 
-sector_total_volumes_start_year = stocks_first_tx_year\
+# Task A (completato)
+sectors_volumes_start_year = stocks_first_tx_year\
     .map(lambda x: ((x[1][2], x[0][1]), x[1][1]))\
-    .reduceByKey(lambda a, b: a + b)\
-    .sortByKey()
+    .reduceByKey(lambda a, b: a + b)
 
-sectors_total_volumes_end_year = stocks_last_tx_year\
+sectors_volumes_end_year = stocks_last_tx_year\
     .map(lambda x: ((x[1][2], x[0][1]), x[1][1]))\
-    .reduceByKey(lambda a, b: a + b)\
-    .sortByKey()\
+    .reduceByKey(lambda a, b: a + b)
+
+sectors_volumes_year: RDD = sectors_volumes_start_year\
+    .join(sectors_volumes_end_year)\
+    .mapValues(lambda x: ((x[1] - x[0]) / x[0] * 100))
 
 
