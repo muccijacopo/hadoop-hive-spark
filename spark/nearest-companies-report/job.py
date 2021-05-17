@@ -53,44 +53,15 @@ stocks_last_tx_month = stock_prices_data.reduceByKey(
 
 stocks_first_last_month: RDD = stocks_first_tx_month.join(stocks_last_tx_month)
 companies_stocks_prices_month: RDD = stocks_first_last_month.map(lambda d: (d[0][0], d[1])).join(stock_sectors_data)
-companies_stocks_prices_month_list = companies_stocks_prices_month \
+companies_var_month = companies_stocks_prices_month \
     .map(lambda d: ((d[1][1], get_month_from_date(d[1][0][0][FirstFileLabels.DATE])),
                     (float(d[1][0][0][FirstFileLabels.CLOSE_PRICE]), float(d[1][0][1][FirstFileLabels.CLOSE_PRICE])))) \
     .reduceByKey(lambda a, b: (a[0] + b[0], a[1] + b[1])) \
     .mapValues(lambda v: ((v[1] - v[0]) / v[0] * 100)) \
-    .map(lambda x: (x[0][1], (x[0][0], x[1]))) \
-    # .aggregateByKey(
-    #     [],
-    #     seqFunc=lambda acc, el: acc + [el[0], el[1]] if abs(el[1][1] - el[1][0]) <= 1 else acc,
-    #     combFunc=lambda acc, el: acc + [el[0], el[1]] if abs(el[1][1] - el[1][0]) <= 1 else acc
-    # )\
+    .map(lambda x: (x[0][1], (x[0][0], x[1])))
+
+companies_couples_var_month: RDD = companies_var_month.join(companies_var_month)
+companies_couples_var_month\
+    .filter(lambda x: abs(x[1][0][1] - x[1][1][1]) <= 1 and x[1][0][0] != x[1][1][0])\
+    .sortBy(lambda x: (x[1][0][0], x[1][1][0], x[0]), ascending=True)\
     .saveAsTextFile(output_folder_path)
-
-# couples = []
-# for companyA in companies_stocks_prices_month_list:
-#     for companyB in companies_stocks_prices_month_list:
-#         if companyA['company_name'] == companyB['company_name']:
-#             continue
-
-
-#
-# complete_data: RDD = stock_prices_data.join(stock_sectors_data)\
-#     .map(lambda data: {
-#         'ticker': data[1][0][FirstFileLabels.TICKER],
-#         'open_price': float(data[1][0][FirstFileLabels.OPEN_PRICE]),
-#         'close_price': float(data[1][0][FirstFileLabels.CLOSE_PRICE]),
-#         'lower_price': float(data[1][0][FirstFileLabels.LOWER_PRICE]),
-#         'higher_price': float(data[1][0][FirstFileLabels.HIGHER_PRICE]),
-#         'volume': int(data[1][0][FirstFileLabels.VOLUME]),
-#         'date': data[1][0][FirstFileLabels.DATE],
-#         'exchange': data[1][1][SecondFileLabels.EXCHANGE],
-#         'company': data[1][1][SecondFileLabels.COMPANY],
-#         'sector': data[1][1][SecondFileLabels.SECTOR],
-#         'industry': data[1][1][SecondFileLabels.INDUSTRY],
-#     })
-
-# stocks_first_tx_month = stock_prices_data\
-#     .map(lambda x: ((x[0], get_month_from_date(x[1][FirstFileLabels.DATE])), {
-#         'date': x[1][FirstFileLabels.DATE],
-#         'close_price': x[1][FirstFileLabels.CLOSE_PRICE]
-# }))
