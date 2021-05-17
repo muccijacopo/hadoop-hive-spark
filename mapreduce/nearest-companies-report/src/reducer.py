@@ -10,16 +10,19 @@ stocks_data = {}
 companies_to_tickers = {}
 companies = set()
 
+
 def get_date_from_string(date: str):
     year, month, day = date.split("-")
     formatted_date = datetime.datetime(int(year), int(month), int(day))
     return formatted_date
+
 
 def init_stock():
     return {
         'prices': {},
         'company_name': ''
     }
+
 
 def init_stock_prices(date, close_price):
     return {
@@ -55,7 +58,6 @@ for line in sys.stdin:
         month = date_string.split("-")[1]
         date = get_date_from_string(date_string)
 
-
         if month not in stocks_data[ticker]['prices']:
             stocks_data[ticker]['prices'][month] = init_stock_prices(date, close_price)
 
@@ -72,10 +74,11 @@ for line in sys.stdin:
         stocks_data[ticker]['company_name'] = company_name
         companies.add(company_name)
 
+
 companies_variation_per_month = {}
-for company in companies:
-    companies_stock = [(ticker, values) for ticker, values in stocks_data.items() if values['company_name'] == company]
-    for ticker, stock_values in companies_stock:
+for company in sorted(companies):
+    company_stocks = [(ticker, values) for ticker, values in stocks_data.items() if values['company_name'] == company]
+    for ticker, stock_values in company_stocks:
         for month in stock_values['prices']:
             total_first_close_price = 0
             total_last_close_price = 0
@@ -86,23 +89,41 @@ for company in companies:
                 companies_variation_per_month[company] = {}
             companies_variation_per_month[company][month] = month_variation
 
-couples = []
+results = []
 threshold = 1
 for companyA, companyA_values in companies_variation_per_month.items():
     for companyB, companyB_values in companies_variation_per_month.items():
         if companyB == companyA:
             continue
-        try:
-            matching_months = [month for (month, variation) in companyB_values.items() if abs(variation - companyA_values[month]) <= threshold]
-        except:
-            continue
-        if len(matching_months) == len(companyA_values.keys()):
-            couples.append((companyA, companyB))
+        # try:
+        #     matching_months = [month for (month, variation) in companyB_values.items() if abs(variation - companyA_values[month]) <= threshold]
+        # except:
+        #     continue
+
+        for month, var in companyB_values.items():
+            try:
+                if abs(companyA_values[month] - var) <= threshold:
+                    results.append({
+                        'companyA': companyA,
+                        'companyA_var': companyA_values[month],
+                        'companyB': companyB,
+                        'companyB_var': var,
+                        'month': month
+                    })
+            except:
+                continue
+
+        #if len(matching_months) == len(companyA_values.keys()):
+        # if len(matching_months) > 1:
+        #     couples.append((companyA, companyB))
 
 
-for (companyA, companyB) in couples:
-    for month in companies_variation_per_month[companyA]:
-        try:
-            print(f"{month}, {companyA}, {companyB}, {companies_variation_per_month[companyA][month]}%, {companies_variation_per_month[companyB][month]}%")
-        except:
-            continue
+for couple in results:
+    # for month in companies_variation_per_month[companyA]:
+    #     try:
+    #         print(f"{month}, {companyA}, {companyB}, {companies_variation_per_month[companyA][month]}%, {companies_variation_per_month[companyB][month]}%")
+    #     except:
+    #         continue
+    print(
+        f"{couple['month']}, {couple['companyA']}, {couple['companyA_var']}%, {couple['companyB']}, {couple['companyB_var']}%"
+    )

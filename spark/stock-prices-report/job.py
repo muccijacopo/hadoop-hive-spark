@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--output_path", type=str, help="Output folder path")
 
 input_folder_path = "hdfs:///app/input"
-output_path = "hdfs:///app/output"
+output_path = "hdfs:///app/output/spark/stock-prices-report"
 
 conf = SparkConf().setAppName('Spark App')
 sc = SparkContext(conf=conf)

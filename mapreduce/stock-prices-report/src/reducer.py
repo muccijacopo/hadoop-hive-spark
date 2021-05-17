@@ -28,27 +28,20 @@ for line in sys.stdin:
     first_date, last_date = ticker_data[ticker]['dates']
     if date < first_date:
         ticker_data[ticker]['dates'][0] = date
+        ticker_data[ticker]['first_close_price'] = close_price
     if date > last_date:
         ticker_data[ticker]['dates'][1] = date
+        ticker_data[ticker]['last_close_price'] = close_price
 
     if low_price < ticker_data[ticker]['prices'][0]:
         ticker_data[ticker]['prices'][0] = low_price
     if high_price > ticker_data[ticker]['prices'][1]:
         ticker_data[ticker]['prices'][1] = high_price
 
-    # updates last close price
-    ticker_data[ticker]['last_close_price'] = close_price
-
 ordered_ticker_data = dict(sorted(ticker_data.items(), key=lambda t: t[1]['dates'][1], reverse=True))
 
 for ticker, data in ordered_ticker_data.items():
-    close_price_change_percentage = round(
-        ((data['first_close_price'] - data['last_close_price']) / data['first_close_price'] * 100), 2)
-    print("%s,%s,%s,%s,%s,%s%%" %
-          (ticker,
-           data['dates'][0],
-           data['dates'][1],
-           data['prices'][0],
-           data['prices'][1],
-           close_price_change_percentage)
-          )
+    stock_var = round((
+            (data['last_close_price'] - data['first_close_price']) / data['first_close_price'] * 100), 2)
+
+    print(f"{ticker}, {data['dates'][0]}, {data['dates'][1]}, {data['prices'][0]}, {data['prices'][1]}, {stock_var}%")
