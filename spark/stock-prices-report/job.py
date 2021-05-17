@@ -1,5 +1,5 @@
 from pyspark import SparkConf, SparkContext
-from pyspark.rdd import PipelinedRDD
+from pyspark.rdd import PipelinedRDD, RDD
 import argparse
 
 TICKER = 0
@@ -56,7 +56,7 @@ stocks_max_price = ticker2stock_data\
         'higher_price': x['higher_price']
     })
 
-stocks_prices = stocks_min_price\
+stocks_min_max_prices = stocks_min_price\
         .join(stocks_max_price)\
         .mapValues(lambda x: (x[0]['lower_price'], x[1]['higher_price']))
 
@@ -64,4 +64,8 @@ stocks_first_last = stocks_first_tx\
     .join(stocks_last_tx)\
     .mapValues(lambda x: (x[0]['date'], x[1]['date'], (x[1]['close_price'] - x[0]['close_price']) / x[0]['close_price'] * 100))
 
-stocks_first_last.join(stocks_prices).sortByKey(ascending=True).saveAsTextFile(output_path)
+report: RDD = stocks_first_last.join(stocks_min_max_prices)
+report\
+    .sortBy(lambda x: x[1][0][1], ascending=False)\
+    .map(lambda x: f"{x[0], x[1][0][0], x[1][0][1], x[1][1][0], x[1][1][1], x[1][0][2]}%")\
+    .saveAsTextFile(output_path)

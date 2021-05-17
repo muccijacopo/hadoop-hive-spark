@@ -35,9 +35,3 @@ CREATE TABLE stock_prices_report as
         ON t1.ticker = t2.ticker
     )
     ORDER BY t2.last_date DESC;
-
---- CLEANING
-DROP TABLE stocks_first_date;
-DROP TABLE stocks_last_date;
-DROP TABLE stocks_variation;
-DROP TABLE stocks_minmax;
