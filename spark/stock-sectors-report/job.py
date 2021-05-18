@@ -65,23 +65,23 @@ stocks_last_tx_year = complete_data\
     .map(lambda data: ((data['ticker'], get_year_from_date(data['date'])), (data['date'], data['close_price'], data['sector'])))\
     .reduceByKey(lambda a, b: b if a[0] < b[0] else a)
 
-# Task A (completato)
-sectors_volumes_start_year = stocks_first_tx_year\
+# Task A
+sectors_total_close_prices_start_year = stocks_first_tx_year\
     .map(lambda x: ((x[1][2], x[0][1]), x[1][1]))\
     .reduceByKey(lambda a, b: a + b)
 
-sectors_volumes_end_year = stocks_last_tx_year\
+sectors_total_close_prices_end_year = stocks_last_tx_year\
     .map(lambda x: ((x[1][2], x[0][1]), x[1][1]))\
     .reduceByKey(lambda a, b: a + b)
 
-sectors_volumes_year: RDD = sectors_volumes_start_year\
-    .join(sectors_volumes_end_year)\
-    .mapValues(lambda x: ((x[1] - x[0]) / x[0] * 100))
+sectors_volumes_year: RDD = sectors_total_close_prices_start_year\
+    .join(sectors_total_close_prices_end_year)\
+    .mapValues(lambda x: round((x[1] - x[0]) / x[0] * 100, 2))
 
-# Task B (da ricontrollare)
+# Task B
 stock_first_last_tx_year: RDD = stocks_first_tx_year.join(stocks_last_tx_year)
 stocks_increment_year = stock_first_last_tx_year\
-    .mapValues(lambda x: ((x[1][1] - x[0][1]) / x[0][1] * 100, x[0][2]))\
+    .mapValues(lambda x: (round((x[1][1] - x[0][1]) / x[0][1] * 100, 2), x[0][2]))\
     .map(lambda x: ((x[1][1], x[0][1]), (x[0][0], x[1][0])))\
     .reduceByKey(lambda a, b: a if a[1] > b[1] else b)
 

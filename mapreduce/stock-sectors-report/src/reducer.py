@@ -47,7 +47,7 @@ def get_best_stock_by_volume(stocks, year):
     return best_stock_ticker, best_volume
 
 
-def get_sector_year_quotation(stocks, year):
+def get_sector_year_var(stocks, year):
     total_first_close_price = 0
     total_last_close_price = 0
     for stock in stocks:
@@ -120,5 +120,5 @@ for sector in ordered_sectors:
         filtered_sector_stocks = [stock for stock in sector_stocks if year in stock[1]]
         best_stock_by_increment = get_best_stock_by_increment(filtered_sector_stocks, year)
         best_stock_by_volume = get_best_stock_by_volume(filtered_sector_stocks, year)
-        sector_year_quotation = get_sector_year_quotation(filtered_sector_stocks, year)
-        print(f"{sector},{year},{sector_year_quotation}%,{best_stock_by_increment[0] or 'N/D'}({round(best_stock_by_increment[1], 2)}%),{best_stock_by_volume[0] or 'N/D'}({best_stock_by_volume[1]})")
+        sector_var = get_sector_year_var(filtered_sector_stocks, year)
+        print(f"{sector}, {year}, {sector_var}%, {best_stock_by_increment[0] or 'N/D'}({round(best_stock_by_increment[1], 2)}%), {best_stock_by_volume[0] or 'N/D'}({best_stock_by_volume[1]})")
