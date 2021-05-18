@@ -31,9 +31,15 @@ CREATE TABLE IF NOT EXISTS company_total_stocks_price_var_month AS
     ) t3
     ORDER BY t3.company, t3.month_;
 
-CREATE TABLE IF NOT EXISTS companies_nearest_couples AS
+CREATE TABLE IF NOT EXISTS nearest_companies_report AS
     SELECT t1.month_, t1.company as company1_name, t1.var as company1_var, t2.company as company2, t2.var as company2_var
     FROM company_total_stocks_price_var_month t1
     JOIN company_total_stocks_price_var_month t2
     ON (t1.company != t2.company AND abs(t1.var - t2.var) <= 1 AND t1.month_ = t2.month_) 
-    ORDER BY t1.company, t2.company, t1.month_
+    ORDER BY t1.company, t2.company, t1.month_;
+
+
+DROP TABLE IF EXISTS stock_prices_filtered;
+DROP TABLE IF EXISTS stock_prices_first_date_of_month;
+DROP TABLE IF EXISTS stock_prices_last_date_of_month;
+DROP TABLE IF EXISTS company_total_stocks_price_var_month;

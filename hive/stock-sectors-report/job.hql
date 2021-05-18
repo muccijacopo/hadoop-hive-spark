@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS stock_sectors_report;
-
 CREATE TABLE IF NOT EXISTS stock_prices_filtered AS
     SELECT *
     FROM stock_prices

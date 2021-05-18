@@ -9,3 +9,4 @@ DROP TABLE IF EXISTS first_stock_tx_by_year;
 DROP TABLE IF EXISTS sectors_best_stock_by_volumes_year;
 DROP TABLE IF EXISTS stock_total_volumes_year;
 DROP TABLE IF EXISTS sectors_var_year;
+DROP TABLE IF EXISTS stock_sectors_report;

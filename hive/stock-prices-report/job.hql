@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS stock_prices_report;
+
 CREATE TABLE stocks_first_date AS
     SELECT *
     FROM (
@@ -35,3 +37,9 @@ CREATE TABLE stock_prices_report as
         ON t1.ticker = t2.ticker
     )
     ORDER BY t2.last_date DESC;
+
+
+DROP TABLE IF EXISTS stocks_first_date;
+DROP TABLE IF EXISTS stocks_last_date;
+DROP TABLE IF EXISTS stocks_variation;
+DROP TABLE IF EXISTS stocks_minmax;
