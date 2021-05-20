@@ -20,7 +20,7 @@ output_path = "hdfs:///app/output/spark/stock-prices-report"
 conf = SparkConf().setAppName('Spark App')
 sc = SparkContext(conf=conf)
 
-data = sc.textFile(input_folder_path + "/stock_prices.csv").map(f=lambda row: row.split(","))
+data = sc.textFile(input_folder_path + "/stock_prices_50.csv").map(f=lambda row: row.split(","))
 
 ticker2stock_data = data.map(lambda row: (row[TICKER], {
     'open_price': float(row[OPEN_PRICE]),

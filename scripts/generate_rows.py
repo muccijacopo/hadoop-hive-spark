@@ -18,11 +18,11 @@ end_date = datetime.date(2020, 12, 31)
 time_between_dates = end_date - start_date
 days_between_dates = time_between_dates.days
 
-input_folder_path = "./files/modified/stock_prices_big.csv"
+file_path = "./files/modified/stock_prices_50.csv"
 
 tickers_list = set()
 
-f = open(input_folder_path, "r")
+f = open(file_path, "r")
 lines = f.readlines()
 
 for line in lines:
@@ -32,8 +32,11 @@ for line in lines:
 
 f.close()
 
-f = open(input_folder_path, "a")
-for stock in range(200):
+f = open(file_path, "a")
+stock_lines_data = ''
+
+for stock in range(30000000):
+    print(stock)
     ticker = random.sample(tickers_list, k=1)[0]
     open_price = random.uniform(8, 20)
     close_price = random.uniform(8, 20)
@@ -49,7 +52,7 @@ for stock in range(200):
     random_number_of_days_from_start_date = random.randrange(days_between_dates)
     date = start_date + datetime.timedelta(days=random_number_of_days_from_start_date)
 
-    stock_data = [ticker, open_price, close_price, close_price_adj, lower_price, higher_price, volume, date]
-    f.write(','.join([str(el) for el in stock_data]) + "\n")
-
+    stock_lines_data += f"{ticker},{open_price},{close_price},{close_price_adj},{lower_price},{higher_price},{volume},{date}\n"
+    
+f.write(stock_lines_data)
 f.close()

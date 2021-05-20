@@ -86,11 +86,11 @@ CREATE TABLE IF NOT EXISTS stock_sectors_report AS
     ORDER BY t1.sector, t1.year_ ASC;
 
 
--- DROP TABLE IF EXISTS stock_prices_filtered;
--- DROP TABLE IF EXISTS sectors_total_price_var_year;
--- DROP TABLE IF EXISTS sectors_best_stock_by_increment_year;
--- DROP TABLE IF EXISTS stocks_increment_by_year;
--- DROP TABLE IF EXISTS last_stock_tx_by_year;
--- DROP TABLE IF EXISTS first_stock_tx_by_year;
--- DROP TABLE IF EXISTS sectors_best_stock_by_volumes_year;
--- DROP TABLE IF EXISTS stock_total_volumes_year;
+DROP TABLE IF EXISTS stock_prices_filtered;
+DROP TABLE IF EXISTS sectors_total_price_var_year;
+DROP TABLE IF EXISTS sectors_best_stock_by_increment_year;
+DROP TABLE IF EXISTS stocks_increment_by_year;
+DROP TABLE IF EXISTS last_stock_tx_by_year;
+DROP TABLE IF EXISTS first_stock_tx_by_year;
+DROP TABLE IF EXISTS sectors_best_stock_by_volumes_year;
+DROP TABLE IF EXISTS stock_total_volumes_year;
