@@ -41,7 +41,7 @@ stock_sectors_data = sc.textFile(input_folder_path + "/stock_sectors.csv") \
     .map(lambda row: row.split(",")) \
     .map(lambda x: (x[SecondFileLabels.TICKER], x[SecondFileLabels.COMPANY]))
 
-stock_prices_data = sc.textFile(input_folder_path + "/stock_prices.csv") \
+stock_prices_data = sc.textFile(input_folder_path + "/stock_prices_50.csv") \
     .map(lambda row: row.split(",")) \
     .filter(lambda x: get_year_from_date(x[FirstFileLabels.DATE]) == 2017) \
     .map(lambda x: ((x[FirstFileLabels.TICKER], get_month_from_date(x[FirstFileLabels.DATE])), x))

@@ -32,7 +32,7 @@ output_folder_path = "hdfs:///app/output/spark/stock-sectors-report"
 conf = SparkConf().setAppName('Spark App')
 sc = SparkContext(conf=conf)
 
-stock_prices_data = sc.textFile(input_folder_path + "/stock_prices.csv")\
+stock_prices_data = sc.textFile(input_folder_path + "/stock_prices_50.csv")\
     .map(lambda row: row.split(","))\
     .filter(lambda x: get_year_from_date(x[FirstFileLabels.DATE]) > 2008 and get_year_from_date(x[FirstFileLabels.DATE]) < 2019)\
     .map(lambda x: (x[FirstFileLabels.TICKER], x))
@@ -74,7 +74,7 @@ sectors_total_close_prices_end_year = stocks_last_tx_year\
     .map(lambda x: ((x[1][2], x[0][1]), x[1][1]))\
     .reduceByKey(lambda a, b: a + b)
 
-sectors_volumes_year: RDD = sectors_total_close_prices_start_year\
+sectors_var_year: RDD = sectors_total_close_prices_start_year\
     .join(sectors_total_close_prices_end_year)\
     .mapValues(lambda x: round((x[1] - x[0]) / x[0] * 100, 2))
 
@@ -93,6 +93,6 @@ stocks_volumes_year = complete_data\
     .reduceByKey(lambda a, b: a if a[1] > b[1] else b)\
 
 
-results: RDD = sectors_volumes_year.join(stocks_increment_year).join(stocks_volumes_year)
+results: RDD = sectors_var_year.join(stocks_increment_year).join(stocks_volumes_year)
 results.sortByKey().saveAsTextFile(output_folder_path)
 
