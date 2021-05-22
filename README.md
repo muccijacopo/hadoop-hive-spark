@@ -7,5 +7,6 @@
 
 ### Esecuzione dei job
 - Preparazione ambiente hdfs
-````
-./scripts/prepare-env.sh
+  ````
+  ./scripts/prepare-env.sh
+  ````
