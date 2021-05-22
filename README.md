@@ -12,10 +12,14 @@
   ./scripts/prepare-env.sh
   ````
 - Esecuzione job
+  Eseguire lo script start_job relativo alla cartella del corrispetivo job
   ````
     ./mapreduce/stock-prices-report/start_job.sh
   ````
   ````
     ./hive/stock-prices-report/start_job.sh
+  ````
+   ````
+    ./spark/stock-prices-report/start_job.sh
   ````
   
