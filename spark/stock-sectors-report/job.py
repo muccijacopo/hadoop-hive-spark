@@ -32,7 +32,7 @@ output_folder_path = "hdfs:///app/output/spark/stock-sectors-report"
 conf = SparkConf().setAppName('Spark App')
 sc = SparkContext(conf=conf)
 
-stock_prices_data = sc.textFile(input_folder_path + "/stock_prices_50.csv")\
+stock_prices_data = sc.textFile(input_folder_path + "/stock_prices_100.csv")\
     .map(lambda row: row.split(","))\
     .filter(lambda x: get_year_from_date(x[FirstFileLabels.DATE]) > 2008 and get_year_from_date(x[FirstFileLabels.DATE]) < 2019)\
     .map(lambda x: (x[FirstFileLabels.TICKER], x))

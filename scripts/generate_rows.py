@@ -18,7 +18,7 @@ end_date = datetime.date(2020, 12, 31)
 time_between_dates = end_date - start_date
 days_between_dates = time_between_dates.days
 
-file_path = "./files/modified/stock_prices_50.csv"
+file_path = "./files/modified/stock_prices_100.csv"
 
 tickers_list = set()
 
@@ -35,7 +35,7 @@ f.close()
 f = open(file_path, "a")
 stock_lines_data = ''
 
-for stock in range(30000000):
+for stock in range(20000000):
     print(stock)
     ticker = random.sample(tickers_list, k=1)[0]
     open_price = random.uniform(8, 20)

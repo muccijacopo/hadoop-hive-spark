@@ -1,0 +1,4 @@
+foreach line in STDINPUT
+    line = rimozione_caratteri(line)
+    labels = split_string_into_list(line, ",")
+    print(labels[0] ... labels[n])

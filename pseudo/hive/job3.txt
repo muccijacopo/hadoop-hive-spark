@@ -1,0 +1,36 @@
+stock_prices_filtered = SELEZIONA TUTTO 
+                        DA stock_prices 
+                        DOVE year = 2017
+
+stock_prices_first_date_of_month = SELEZIONA ticker, month, price
+                            DA (
+                                SELEZIONA ticker E MINIMO(date)
+                                DA stock_prices_filtered
+                                RAGGRUPATA PER ticker, month
+                            ) UNISCI stock_prices_filtered PER ticker e date
+
+
+stock_prices_first_date_of_month = SELEZIONA ticker, month, price
+                            DA (
+                                SELEZIONA ticker E MASSIMO(date)
+                                DA stock_prices_filtered
+                                RAGGRUPATA PER ticker, month
+                            ) UNISCI stock_prices_filtered PER ticker e date
+
+
+company_total_stocks_price_var_month = 
+                    SELEZIONA company, month, total2 - total1 / total1 * 100
+                    DA (  
+                        SELEZIONA company, month, SOMMA(price1), SOMMA(price2)
+                        DA (
+                            UNISCI(stock_sectors, 
+                                stock_prices_first_date_of_month, 
+                                stock_prices_first_date_of_month
+                            ) PER ticker E month
+                        ) RAGGRUPATA PER company, month
+                    )
+
+report = UNISCI(
+    company_total_stocks_price_var_month, 
+    company_total_stocks_price_var_month
+    ) PER month E DOVE company1 != company2 E ASSOLUTO(variazione2 - variazione1) <= THRESHOLD 

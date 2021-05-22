@@ -1,0 +1,14 @@
+stocks_data_rdd = file_to_rdd(file).map(ticker, stock_values)
+
+// find element with min date by ticker
+stocks_first = stocks_data_rdd.reduceByKey(a[date] < b[date]) 
+// find element with max date by ticker
+stocks_last = stocks_data_rdd.reduceByKey(a[date] > b[date]) 
+// find element with min price by ticker
+stocks_min_price = stocks_data_rdd.reduceByKey(a[price] < b[price]) 
+// find element with max price by ticker
+stocks_max_price = stocks_data_rdd.reduceByKey(a[price] > b[price]) 
+
+stocks_var = stocks_first.join(stocks_last).map(b[price] - a[price] / a[price] * 100)
+
+report = join(stocks_var, stocks_min_price, stocks_max_price, stocks_first, stocks_last)

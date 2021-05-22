@@ -1,0 +1,30 @@
+stock_prices = file_to_rdd(file1)
+    .filter(year == 2017)
+    .map((ticker, month), stock_values)
+
+stock_companies = file_to_rdd(file2).map(ticker, company)
+
+// find first stock record each month
+stock_first_tx_month = stock_prices.reduceByKey(a[date] < b[date])
+// find last stock record each month
+stock_last_tx_month = stock_prices.reduceByKey(a[date] > b[date])
+
+// join the two rdds by ticker and month
+stock_first_last_tx_month =  stock_first_tx_month
+    .join(stock_last_tx_month)
+    .map(ticker, values)
+
+// join company rdd and calculate company variation each month
+companies_var_month = stock_first_last_tx_month.join(stock_companies)
+    .map((company, month), ((stock_first_tx, stock_last_tx)))
+    .reduceByKey((
+        a[stock_first_tx][price] + b[stock_first_tx][price], 
+        a[stock_last_tx][price] + b[stock_last_tx][price]
+    ))
+    .mapValues((totalB - totalA) / totalA * 100)
+
+// self-join rdd and keep couples which pass the condition
+companies_couples_var_month = companies_var_month.join(companies.var_month)
+    .filter(a != b and absolute(a[var] - b[var]) <= threshold)
+    .sort()
+    .save()

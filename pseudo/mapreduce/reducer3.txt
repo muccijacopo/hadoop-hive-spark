@@ -1,0 +1,34 @@
+foreach line in STDINPUT
+    labels = split_string_into_list(line)
+
+    if is_first_file(labels) then
+        month = get_month_from_date(labels[date])
+
+        if date > stocks_data[labels.ticker][month].last_date then
+            update_last_date(labels.ticker, month, labels[date])
+            update_last_price(labels.ticker, month, close_price)
+         if date < stocks_data[labels.ticker][month].first_date then
+            update_first_date(labels.ticker, month, labels[date])
+            update_first_price(labels.ticker, month, close_price)
+
+    else if is_second_file(labels)
+        ticker, company, ... = labels
+        stocks_data[ticker][company] = sector
+        add(companies, company)
+
+foreach company in companies
+    stock = get_company_stocks(stocks_data, company)
+    foreach month in stock
+        month_var = stock[month][last][price] - stock[month][first][price] / stock[month][first][price] * 100
+        companies_var_month[company][month] = month_var
+
+foreach company1 in companies_var_month
+    for company2 in companies_var_month
+        if company1 != company2 then
+            for month in company1
+                absolute_value(company2[month][var] - company1[month][var]) <= threshold then
+                    append(coupled, (company1, company2))
+
+
+foreach couple in couples
+    print(couple[0], couple[1])

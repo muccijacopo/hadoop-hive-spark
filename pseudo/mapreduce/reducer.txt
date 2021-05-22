@@ -1,0 +1,15 @@
+foreach line in STDINPUT
+    labels = split_string_into_list(line)
+    ticker, date, low_price, high_price, close_price = labels
+
+    if date < tickers_data[ticker][lower_date] then update_first_stock_tx(date, close_price)
+    if date  > tickers_data[ticker][higher_date] then update_last_stock_tx(date, close_price)
+
+    if low_price < tickers_data[ticker][lower_price] then update_lower_price(low_price)
+    if high_price > tickers[data[ticker][higher_price] then update_higher_price(high_price)
+
+    order_by_last_date(tickers_data)
+    foreach ticker in tickers_data
+    var = (ticker[last_close_price] - ticker[first_close_price]) / ticker[first_close_price] * 100
+    print(ticker, first_date, last_date, lower_price, higher_price, var)
+

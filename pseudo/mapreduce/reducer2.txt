@@ -1,0 +1,28 @@
+foreach line in STDIN
+    labels = split_string_into_list(line)
+    if is_first_file(labels) then
+        ticker, date, date, close_price, volume = labels
+        year = get_year_from_date(date)
+
+        if date < stocks_data[ticker][year].first_date then
+            update_first_date(ticker, year, date)
+            update_first_close_price(ticker, year, close_price)
+
+        if date > stocks_data[ticker][year].last_date then
+            update_last_date(ticker, year, date)
+            update_last_close_price(ticker, year, close_price)
+        
+        update_volume(ticker, year, volume)
+
+
+    else if is_second_file(labels) then
+        append(sector2stocks[labels.sector], labels.ticker)
+    
+
+    sectors = order_by_sector(sector2stocks)
+    foreach sector and year 
+        sector_stocks = get_stocks(sector)
+        best_stock_inc = get_best_stock_by_inc(sector_stocks, year)
+        best_stock_volume = get_best_stock_by_volume(sector_stocks, year)
+        sector_var_year = calculate_sector_var(sector_stocks, year)
+        print(sector, year, best_stock_inc, best_stock_volume, sector_var_year)

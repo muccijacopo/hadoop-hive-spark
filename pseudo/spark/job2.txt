@@ -1,0 +1,30 @@
+stocks_data = file_to_rdd(file)
+
+// find first stock record by year
+stock_first_tx_year = stocks_data.map((ticker, year), stock_values)
+    .reduceByKey(a[date] < b[date])
+// find last stock record by year
+stock_first_tx_year = stocks_data.map((ticker, year), stock_values)
+    .reduceByKey(a[date] > b[date])
+
+// find sector total variation by year
+sector_total_prices_1 = stock_first_tx_year.map((sector, year), stock_values)
+    .reduceByKey(priceA + priceB)
+sector_total_prices_2 = stock_last_tx_year.map((sector, year), stock_values)
+    .reduceByKey(priceA + priceB)
+sector_var_year = sector_total_prices_1.join(sector_total_prices_2)
+    .map((totalB - totalA) / totalA * 100)
+
+// find first sector stock by variation each year
+stocks_var_year = stock_first_tx_year.join(stock_last_tx_year)
+    .map((last_price - first_price) / first_price * 100)
+    .map((sector, year), stock_values)
+    .reduceByKey(priceA > priceB)
+
+// find best sector stock by volume each year
+stocks_volumes = stocks_data.map((sector, ticker, year), volume)
+    .reduceByKey(volume1 + volume2)
+    .map((sector, year), ticker, volume)
+    .reduceByKey(volume1 > volume2)
+
+report = join(sector_var_year, stocks_var_year, stocks_volumes).sort().save()

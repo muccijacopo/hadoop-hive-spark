@@ -1,0 +1,18 @@
+stocks_first = SELEZIONA * 
+        DA Il risultato effettuato dalla selezione del primo record da ogni gruppo, 
+        partizionato per ticker e data e ordinato per data crescente
+
+stocks_last = SELEZIONA * 
+            DA Il risultato effettuato dalla selezione del primo record da ogni gruppo, 
+            partizionato per ticker e data e ordinato per data decrescente
+
+stocks_var = SELEZIONA ticker e t2 - t1 / t1 * 100 
+            DA (JOIN tra stocks_first e stocks_last DOVE ticker1 = ticker2)
+
+stocks_min_max = SELEZIONA ticker, MINIMO(close_price), MASSIMO(close_price), MINIMO(data), MASSIMO(data)
+                DA stock_prices RAGGRUPATO PER ticker
+
+report = SELEZIONA * 
+        DA JOIN(stocks_var, stocks_minmax) 
+        DOVE ticker1 = ticker2 
+        E ORDINA PER data_finale

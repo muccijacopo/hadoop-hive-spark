@@ -1,0 +1,10 @@
+foreach line in STDINPUT
+    line = rimozione_caratteri(line)
+    labels = split_string_into_list(line, ",")
+    if is_first_file(labels) then
+        year = get_year_from_date(labels[date])
+        if year == 2017 then
+            print(ticker FILE1, ... labels[n])
+        else skip
+    else if is_second_file(labels) then
+        print(ticker, FILE2, ... labels[n])

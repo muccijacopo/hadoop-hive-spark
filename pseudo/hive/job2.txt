@@ -1,0 +1,44 @@
+stock_prices_filtered = SELEZIONA * 
+                        DA stock_prices 
+                        DOVE year >= 2008 and year <= 2019
+
+stock_total_volumes_year = SELEZIONA *, SOMMA(volume)
+                            DA stock_prices_filtered
+                            RAGGRUPA PER ticker, year
+
+
+sectors_best_stock_by_volumes_year = 
+                            SELEZIONA IL PRIMO RECORD 
+                            DA OGNI GRUPPO PARTIZIONATO PER sector, year 
+                            E ORDINATO PER volume DECRESCENTE
+                            DA UNISCI(stock_total_volumes_year and stock_sectors dove ticker1 = ticker2)
+
+first_stock_tx_by_year = SELEZIONA *
+                        DA IL PRIMO RECORD PER OGNI GRUPPO PARTIZIONATO PER ticker, year
+                        E ORDINATO PER date CRESCENTE
+
+last_stock_tx_by_year = SELEZIONA *
+                        DA IL PRIMO RECORD PER OGNI GRUPPO PARTIZIONATO PER ticker, year
+                        E ORDINATO PER date DECRESCENTE
+
+stocks_var_year = SELEZIONA *, (price2 - price1) / price1 * 100
+                DA UNISCI(first_stock_tx_by_year, last_stock_tx_by_year DOVE ticker1 = ticker2)
+
+sectors_best_stock_by_increment_year = 
+                    SELEZIONA IL PRIMO RECORD PER OGNI GRUPPO PARTIZIONATO PER sector, year
+                    E ORDINATO PER variation
+                    DA UNISCI(stock_sectors, stocks_var_year DOVE ticker1 = ticker2)
+
+
+sectors_var_year =
+            SELEZIONA sector, year, total_close_price_2 - total_close_price_1 / total_close_price1 * 100
+            DA (
+                SELEZIONA *, SOMMA(close_price_1), SOMMA(close_price_2)
+                UNISCI(first_stock_tx_by_year, last_stock_tx_by_year, stock_sectors
+                ) PER ticker E year
+                RAGGRUPA PER sector, year
+            )
+
+report = UNISCI(sectors_var_year, sectors_best_stock_by_increment_year, sectors_best_stock_by_volumes_year)
+        PER ticker E year
+        E ORDINA PER settore, year CRESCENTE

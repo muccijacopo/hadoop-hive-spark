@@ -2,4 +2,4 @@ CREATE TABLE IF NOT EXISTS stock_prices (ticker STRING, open_price FLOAT, close_
 ROW FORMAT DELIMITED 
 FIELDS TERMINATED BY ',';
 
-LOAD DATA INPATH 'hdfs:///app/input/stock_prices_50_copy.csv' INTO TABLE stock_prices;
+LOAD DATA INPATH 'hdfs:///app/input/stock_prices_100_copy.csv' INTO TABLE stock_prices;
